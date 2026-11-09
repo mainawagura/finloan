@@ -55,15 +55,17 @@ export const usePathname = () => {
 export const Link: React.FC<{
   to: string;
   className?: string;
+  title?: string;
   children: React.ReactNode;
   onClick?: () => void;
-}> = ({ to, className, children, onClick }) => {
+}> = ({ to, className, title, children, onClick }) => {
   const { navigate } = useRouter();
 
   return (
     <a
       href={`#${to.startsWith('/') ? to : '/' + to}`}
       className={className}
+      title={title}
       onClick={(e) => {
         e.preventDefault();
         navigate(to);
