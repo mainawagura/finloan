@@ -1,60 +1,70 @@
-# FinLoan — Frontend Security Architecture & Integration Gateway
+# FinLoan — Enterprise Loan Management System
 
-**Phase 1: Frontend-Only Security Experience**  
-**Security Baseline:** OWASP ASVS, OWASP Top 10, FinLoan Security Architecture Technical Specification.
+FinLoan is an enterprise-grade Loan Management System designed for commercial banks, microfinance institutions, SACCOs, and digital lenders. The platform enforces institutional lending workflows including credit origination, maker-checker underwriting approval gates, capital disbursement, installment amortization tracking, loan recoveries, and executive analytics.
+
+All financial amounts are denominated in **Kenya Shillings (KES / KSh)**.
 
 ---
 
-## 🛡️ Overview
+## 🏛️ System Architecture
 
-This repository houses the frontend implementation of FinLoan's centralized enterprise security architecture. It provides permission-aware navigation, server-session management interfaces, financial maker-checker workflows, and security audit monitoring while strictly respecting **Section 9.6 demonstration boundaries** (no local password verification or fake cryptographic hashing).
-
-## 🚀 Running the Application
-
-```bash
-cd finloan-frontend
-npm run dev
+```
+finloan/
+├── backend/                  # C# ASP.NET Core Clean Architecture Web API
+│   ├── FinLoan.sln
+│   └── src/
+│       ├── FinLoan.API/             # REST Endpoints, Middleware, Program.cs
+│       ├── FinLoan.Application/     # CQRS, Services, Interfaces, DTOs
+│       ├── FinLoan.Domain/          # Core Domain Entities & Rules
+│       └── FinLoan.Infrastructure/  # EF Core, SQL Server, Persistence
+│
+└── frontend/                 # React + TypeScript Modern Dashboard
+    ├── src/
+    │   ├── app/                     # Security, RBAC Gates, Router
+    │   ├── features/                # Lending Lifecycle Modules
+    │   │   ├── authentication/      # Corporate Banking Login Terminal
+    │   │   ├── dashboard/           # Executive & Risk Portfolio Dashboard
+    │   │   ├── customers/           # Borrower Management & KYC
+    │   │   ├── loan-products/       # Credit Facility Configuration
+    │   │   ├── loan-applications/   # Origination & Intake
+    │   │   ├── credit-assessment/   # Quantitative Underwriting
+    │   │   ├── loan-approvals/      # Dual-Control Maker-Checker
+    │   │   ├── disbursements/       # Treasury Net Payout Release
+    │   │   ├── loan-accounts/       # Amortization Schedules & Ledgers
+    │   │   ├── financial-demo/      # Repayments & Reversals
+    │   │   ├── recoveries/          # Delinquency PAR & Promise to Pay
+    │   │   └── reports/             # PDF / Excel Treasury Statements
+    │   ├── services/                # API Client & Reactive Store
+    │   └── shared/                  # Reusable Layout, Header & Utilities
+    ├── package.json
+    └── vite.config.ts
 ```
 
-The application runs locally on **`http://localhost:3001/`**.
+---
+
+## 🚀 Getting Started
+
+### 1. Frontend (React + TypeScript)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+The application will launch at `http://localhost:3001/` with the **Staff Authentication Terminal**.
+
+### 2. Backend (C# ASP.NET Core)
+```bash
+cd backend
+dotnet restore
+dotnet build
+dotnet run --project src/FinLoan.API
+```
+The API Swagger documentation will be accessible at `https://localhost:7001/swagger`.
 
 ---
 
-## 🔑 Key Architectural Features Implemented
-
-### 1. Interactive Demo Persona Switcher (Section 9.6)
-Switch between all 7 institutional roles with a single click to immediately observe how permission gates and navigation menus dynamically adapt:
-- **`SUPER_ADMIN`**: Governance & platform administration (Maker role; self-approval prohibited).
-- **`ADMIN`**: User provisioning, session monitoring, and audit log inspection.
-- **`LOAN_OFFICER`**: Originates customer profiles and loan applications (`loans.create`).
-- **`CREDIT_MANAGER`**: Underwriting checker with exclusive authority to approve/reject loans (`loans.approve`, `loans.reject`).
-- **`FINANCE_OFFICER`**: Disbursement and repayment posting/reversal (`loans.disburse`, `repayments.reverse`).
-- **`RECOVERY_OFFICER`**: Delinquency collections and recovery payment records.
-- **`AUDITOR`**: Read-only compliance access to the append-only security audit trail.
-- **`GUEST / UNAUTHENTICATED`**: Demonstrates redirect and authentication requirement guards.
-
-### 2. Separation of Duties & Maker-Checker (Sections 6.2, 7.1 & 7.2)
-- In the **Loan Processing** tab, loans created by a Maker cannot be approved by that same user.
-- `SUPER_ADMIN` does not hold loan approval permissions, preventing administrative self-approval of debt facilities.
-
-### 3. Server-Managed Session Architecture (Section 5)
-- **Active Sessions Page**: Shows registered devices, IP addresses, user agents, and session creation timestamps.
-- **Sliding Inactivity & Absolute Lifetime**: Live counters in the header demonstrate the 15-minute sliding idle timeout and 8-hour absolute session boundary.
-- **Session Revocation**: Real-time simulation of individual session revocation and bulk "Revoke All Other Sessions" operations.
-
-### 4. Tamper-Evident Security Audit Logs (Section 8)
-- Displays an append-only timeline of security events with **cryptographic SHA-256 hash chaining** (`previousEventHash` -> `eventHash`).
-
-### 5. Mandatory Authentication Screens (Section 9.2)
-Available individually or side-by-side in the **Auth Screens Gallery**:
-1. Sign In (with password complexity guidance and lockout notice)
-2. Forgot Password (with Section 4.4 anti-enumeration protection)
-3. Reset Password (with real-time Section 4.3 password policy validator)
-4. Email Verification (single-use cryptographically signed token)
-5. Multi-Factor Authentication (TOTP Authenticator & backup recovery codes)
-6. HTTP 403 Access Denied
-7. Session Expired (Idle vs Absolute expiration)
-
-### 6. API Integration Contracts (Section 10)
-- Located in `src/services/api/contracts.ts` and `src/services/api/client.ts`.
-- Fully typed RFC 9457 `ProblemDetails` error structures and cookie-credentialed client (`credentials: 'include'`).
+## 🛡️ Enterprise Security & Governance
+- **Maker-Checker Enforcement**: Dual-control approval workflows preventing credit self-approval.
+- **Role-Based Access Control (RBAC)**: Fine-grained permissions across 7 institutional personas.
+- **Central Bank Regulatory Compliance**: Adheres to OWASP ASVS Level 3 guidelines.
+- **Immutable Financial Transactions**: All ledger postings and reversals are cryptographically tracked without hard deletion.
