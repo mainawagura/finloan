@@ -1,0 +1,1 @@
+export { useHasPermission } from './usePermissions';
